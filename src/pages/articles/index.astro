@@ -1,0 +1,30 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Card from '../../components/Card.astro';
+import { newtClient } from "../../lib/newt";
+import type { Article } from "../../lib/newt";
+const { items: articles } = await newtClient.getContents<Article>({
+	appUid: 'blog',
+	modelUid: 'article',
+	query: {
+		select: ['title','slug','body'],
+	},
+})
+---
+<Layout title="Article">
+	<main>
+		<ul>
+			{
+				articles.map((article) => {
+					return (
+						<Card
+				      href= {`/articles/${article.slug}`}
+				      title= {article.title}
+							body= ''
+				    />
+					)
+				})
+			}
+		</ul>
+	</main>
+</Layout>
