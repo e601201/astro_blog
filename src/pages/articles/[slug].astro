@@ -1,0 +1,45 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { newtClient } from "../../lib/newt";
+import type { Article } from "../../lib/newt";
+
+export const getStaticPaths = async () => {
+  const { items: articles } = await newtClient.getContents<Article>({
+    appUid: 'blog',
+    modelUid: 'article',
+    query: {
+      select: ['title', 'slug', 'body'],
+    },
+  })
+  return articles.map((article) => ({
+    params: { slug: article.slug },
+    props: { article },
+  }))
+}
+
+const { article } = Astro.props
+---
+
+<Layout title="Article">
+  <main>
+    <h1>{article.title}</h1>
+    <article set:html={article.body}/>
+    <a class="back-button" href={`/articles`}>戻る</a>
+  </main>
+</Layout>
+
+<style>
+  .back-button {
+    display: inline-block;
+    border-style: solid;
+    text-align: center;
+    width: 60px;
+    height: 30px;
+    color: black;
+    background-color: rgb(225, 224, 224);
+    border-radius: 5%;
+    border-width:1px;
+    border-color: darkgray;
+    text-decoration: none;
+  }
+</style>
